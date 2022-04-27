@@ -1,0 +1,14 @@
+# depslib dependency file v1.0
+1651072898 source:d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\main.cpp
+	"myheader.h"
+
+1651073061 d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\myheader.h
+	<iostream>
+	<vector>
+	<algorithm>
+	<iterator>
+	<cmath>
+
+1651072958 source:d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\transportation.cpp
+	"myheader.h"
+

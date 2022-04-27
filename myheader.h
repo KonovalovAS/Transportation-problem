@@ -1,26 +1,32 @@
+#include <iostream>
+
 #include <vector>
 #include <algorithm>
 #include <iterator>
+#include <cmath>
 
 using namespace std;
 
-class Problem
-{
+struct pt{ // point
+    int id;
+    double x, y;
+    int demand;
+
+    pt();
+    pt( int ID, double X, double Y, int D );
+    double dist( pt &distance_to ); // returns distance between two points
+};
+
+class Problem{
 public:
 
-    Problem();
+    Problem( int V, int c );
+    void make_source( pt S );
+    void add_point( pt newpt );
 
     void Solve();
 
-    struct pt{ // point
-        int id;
-        double x, y;
-
-        static int ID;
-        pt( double X, double Y );
-
-        double operator()( pt &distance_to ); // returns distance between two points
-    };
+    void show_cond();
 
 private:
 
