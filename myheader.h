@@ -46,6 +46,7 @@ private:
 class Solution{
 public:
     Solution( Problem *P );
+    void calculate();
 
 private:
 
@@ -59,8 +60,7 @@ private:
         bool operator<(const option &r_opt);
     };
 
-    struct sv_solution // single-vehicle solution ("sub-solution")
-    {
+    struct sv_solution{ // single-vehicle solution ("sub-solution");
         sv_solution();
         sv_solution( const pt &source );
 
@@ -71,7 +71,7 @@ private:
         option& insertion_check( const pt &npt );
     };
 
-    vector<sv_solution> dist; // consumers distribution among vehicles
+    vector<sv_solution> distr; // consumers distribution among vehicles
     double solution_cost();
     void point_insertion( const pt &npt );
 

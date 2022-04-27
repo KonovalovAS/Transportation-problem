@@ -76,25 +76,30 @@ const pt& Problem::operator()(int index){
 
 /// Solving
 
-// Old code:
-/*
-Problem::sv_solution::sv_solution(){
+Solution::Solution( Problem *P ){
+    the_problem = P;
+    distr = vector<sv_solution>(the_problem->Consumers_number(),
+                                the_problem->source());
+}
+
+Solution::sv_solution::sv_solution(){
     goods_delivered = 0;
     cost = 0;
     path = {};
 }
 
-Problem::sv_solution::sv_solution( const pt &source ){
+Solution::sv_solution::sv_solution( const pt &source ){
     goods_delivered = 0;
     cost = 0;
     path = {source,source};
 }
 
-bool Problem::option::operator<(const option &r_opt){
+bool Solution::option::operator<(const option &r_opt){
     return this->additional_cost < r_opt.additional_cost;
 }
 
-option& sv_solution::insertion_check( sv_solution &sv_sol ){
+/*
+option& Solution::sv_solution::insertion_check( sv_solution &sv_sol ){
 
     /// TODO
 
@@ -104,7 +109,7 @@ option& sv_solution::insertion_check( sv_solution &sv_sol ){
         // return "option" with this information
 }
 
-void Problem::point_insertion( const pt &npt ){
+void Solution::point_insertion( const pt &npt ){
 
     int num_options = 0;
     vector<option> opts(0);
@@ -127,16 +132,16 @@ void Problem::point_insertion( const pt &npt ){
                 // the idea is just in my head
 }
 
-void Problem::Solve(){
-    Solution = vector<sv_solution> (Num_points,Source);
+void Solution::calculate(){
 
     // insert each point from points_data into solution:
         // find optimal place among all sv_solutions
             // ( keep all options in memory )
         // insert in there
 
-    for(int i=0; i<Num_points; i++)
-        point_insertion( points_data[i] );
+    int n = the_problem->Consumers_number();
+    for(int i=0; i<n; i++)
+        point_insertion( the_problem->(i) );
 
     // All points are inserted, the solution is kinda ready...
 }
