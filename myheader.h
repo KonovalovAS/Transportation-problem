@@ -23,10 +23,14 @@ public:
     Problem( int V, int c );
     void make_source( pt S );
     void add_point( pt newpt );
-
-    void Solve();
-
     void show_cond();
+
+    int Consumers_number();
+    int Vehicles_number();
+    int Capacity();
+
+    const pt& source();
+    const pt& operator()(int index);
 
 private:
 
@@ -37,6 +41,15 @@ private:
         capacity;
 
     vector<pt> points_data;
+};
+
+class Solution{
+public:
+    Solution( Problem *P );
+
+private:
+
+    Problem * the_problem;
 
     struct option{ // auxiliary structure
         int sv_index;
@@ -58,13 +71,8 @@ private:
         option& insertion_check( const pt &npt );
     };
 
-    friend sv_solution;
-    friend option;
-
+    vector<sv_solution> dist; // consumers distribution among vehicles
     double solution_cost();
-
-    vector<sv_solution> Solution; // consumers distribution among vehicles
-
     void point_insertion( const pt &npt );
 
 };

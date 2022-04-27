@@ -51,8 +51,33 @@ void Problem::show_cond(){
         cout<<p.demand<<" "<<p.x<<" "<<p.y<<"\n";
 }
 
+int Problem::Consumers_number(){
+    return Num_points;
+}
+
+int Problem::Vehicles_number(){
+    return num_vehicles;
+}
+
+int Problem::Capacity(){
+    return capacity;
+}
+
+const pt& Problem::source(){
+    return Source;
+}
+
+const pt& Problem::operator()(int index){
+    if(index<Num_points)
+        return points_data[index];
+    else
+        return Source;
+}
+
 /// Solving
 
+// Old code:
+/*
 Problem::sv_solution::sv_solution(){
     goods_delivered = 0;
     cost = 0;
@@ -102,7 +127,6 @@ void Problem::point_insertion( const pt &npt ){
                 // the idea is just in my head
 }
 
-
 void Problem::Solve(){
     Solution = vector<sv_solution> (Num_points,Source);
 
@@ -116,3 +140,4 @@ void Problem::Solve(){
 
     // All points are inserted, the solution is kinda ready...
 }
+*/
