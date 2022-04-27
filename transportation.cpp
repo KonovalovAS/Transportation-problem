@@ -1,5 +1,7 @@
 #include "myheader.h"
 
+/// Initializing the problem
+
 pt::pt(){
     id = -1;
     x = 0;
@@ -38,6 +40,7 @@ void Problem::add_point( pt newpt ){
 
 void Problem::show_cond(){
 
+    cout<<"\nThe problem initialized:\n\n";
     cout<<Num_points<<" "
     <<num_vehicles<<" "
     <<capacity<<"\n";
@@ -46,4 +49,70 @@ void Problem::show_cond(){
         <<Source.x<<" "<<Source.y<<"\n\n";
     for(auto p: points_data)
         cout<<p.demand<<" "<<p.x<<" "<<p.y<<"\n";
+}
+
+/// Solving
+
+Problem::sv_solution::sv_solution(){
+    goods_delivered = 0;
+    cost = 0;
+    path = {};
+}
+
+Problem::sv_solution::sv_solution( const pt &source ){
+    goods_delivered = 0;
+    cost = 0;
+    path = {source,source};
+}
+
+bool Problem::option::operator<(const option &r_opt){
+    return this->additional_cost < r_opt.additional_cost;
+}
+
+option& sv_solution::insertion_check( sv_solution &sv_sol ){
+
+    /// TODO
+
+    // finding place for insertion
+        // saving iterator for "emplace"-method
+        // saving additional cost for such emplacement
+        // return "option" with this information
+}
+
+void Problem::point_insertion( const pt &npt ){
+
+    int num_options = 0;
+    vector<option> opts(0);
+
+    for(int i=0; i<num_vehicles; i++){
+        if( npt.demand <= capacity - Solution[i].cost ){
+            num_options++;
+            option newopt = Solution[i].insertion_check( npt );
+            newopt.sv_index = i;
+            opts.push_back(newopt);
+        }
+    }
+
+    /// TODO
+    // Greedy choice:
+        // inserting to the place with the lowest additional price
+
+            /// LATER (for genetic algorithm):
+            // *a different way to choose the place for insertion
+                // the idea is just in my head
+}
+
+
+void Problem::Solve(){
+    Solution = vector<sv_solution> (Num_points,Source);
+
+    // insert each point from points_data into solution:
+        // find optimal place among all sv_solutions
+            // ( keep all options in memory )
+        // insert in there
+
+    for(int i=0; i<Num_points; i++)
+        point_insertion( points_data[i] );
+
+    // All points are inserted, the solution is kinda ready...
 }

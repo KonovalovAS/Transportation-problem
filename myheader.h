@@ -38,19 +38,33 @@ private:
 
     vector<pt> points_data;
 
-    class Solution // global solution
-    {
-    public:
+    struct option{ // auxiliary structure
+        int sv_index;
+        double additional_cost;
+        vector<pt>::iterator insert_here;
 
-        struct sv_solution // single-vehicle solution (subsolution)
-        {
-            int goods_delivered;
-            double cost;
-            vector<pt> path;
-        };
-
-        double cost();
-        vector<sv_solution> distr; // consumers distribution among vehicles
+        bool operator<(const option &r_opt);
     };
+
+    struct sv_solution // single-vehicle solution ("sub-solution")
+    {
+        sv_solution();
+        sv_solution( const pt &source );
+
+        int goods_delivered;
+        double cost;
+        vector<pt> path;
+
+        option& insertion_check( const pt &npt );
+    };
+
+    friend sv_solution;
+    friend option;
+
+    double solution_cost();
+
+    vector<sv_solution> Solution; // consumers distribution among vehicles
+
+    void point_insertion( const pt &npt );
 
 };
