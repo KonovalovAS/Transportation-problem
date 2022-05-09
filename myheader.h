@@ -56,7 +56,7 @@ private:
 
 class Solution{
 public:
-    Solution( Problem *P );
+    Solution( Problem *P, bool greedy_flag = true );
     Solution( Problem *P, vector<int> &var );
     void calculate();
     double Cost;
@@ -64,6 +64,9 @@ public:
     void show();
 
     bool exists;
+    bool greedy;
+
+    vector<int> Variator();
 
     //~Solution();
 
@@ -99,6 +102,7 @@ private:
     vector<sv_solution> distr; // consumers distribution among vehicles
     double solution_cost();
     void point_insertion( const pt &npt, int k );
+    void point_insertion_( const pt &npt, int k );
     void insertion( const pt &npt, option &opt );
 
     vector<int> variator;

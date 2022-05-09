@@ -92,7 +92,7 @@ void Problem::permute(){
 
 /// Solving
 
-Solution::Solution( Problem *P ){
+Solution::Solution( Problem *P, bool greedy_flag ){
     the_problem = P;
     distr.resize(0);
     sv_solution init = sv_solution(the_problem->source());
@@ -102,6 +102,7 @@ Solution::Solution( Problem *P ){
 
     variator = vector<int> (the_problem->Consumers_number(),0);
     exists = true;
+    greedy = greedy_flag;
 }
 
 Solution::Solution( Problem *P, vector<int> &var ){
@@ -114,9 +115,12 @@ Solution::Solution( Problem *P, vector<int> &var ){
 
     variator = var;
     exists = true;
+    greedy = false;
 }
 
-
+vector<int> Solution::Variator(){
+    return variator;
+}
 
 void Solution::show(){
     cout<<"\n";
@@ -168,6 +172,18 @@ Solution::option& Solution::option::operator=(const option r_opt){
     return *this;
 }
 
+void Solution::insertion( const pt &npt, option &opt ){
+
+    //cout << 12 << "\n";
+    distr[opt.sv_index].cost += opt.additional_cost;
+    distr[opt.sv_index].goods_delivered += npt.demand;
+    //cout << 13 << "\n";
+    vector<pt>::iterator ins_here = next( distr[opt.sv_index].path.begin(), opt.insert_here );
+    //cout << 14 << "\n";
+    distr[opt.sv_index].path.emplace( ins_here, npt );
+    //cout << 15 << "\n";
+}
+
 Solution::option Solution::sv_solution::insertion_check( const pt &npt ){
 
     // finding place for insertion
@@ -202,19 +218,66 @@ Solution::option Solution::sv_solution::insertion_check( const pt &npt ){
     return newopt;
 }
 
-void Solution::insertion( const pt &npt, option &opt ){
+void Solution::point_insertion( const pt &npt, int k ){
 
-    //cout << 12 << "\n";
-    distr[opt.sv_index].cost += opt.additional_cost;
-    distr[opt.sv_index].goods_delivered += npt.demand;
-    //cout << 13 << "\n";
-    vector<pt>::iterator ins_here = next( distr[opt.sv_index].path.begin(), opt.insert_here );
-    //cout << 14 << "\n";
-    distr[opt.sv_index].path.emplace( ins_here, npt );
-    //cout << 15 << "\n";
+    vector<option> opts(0);
+    int capacity = the_problem->Capacity();
+
+    int i=0;
+    // for each sv_solution in distr: trying to insert
+    for(auto s: distr){
+        if( npt.demand <= capacity - s.goods_delivered ){
+            int n = (s.path).size();
+            // cout << n << "\n";
+            for(int j=0; j<n-1; j++){
+                //cout << "here!\n";
+                double add_cost = dist( s.path[j], npt )
+                                + dist( npt, s.path[j+1] )
+                                - dist( s.path[j], s.path[j+1] );
+                option newopt( add_cost, j+1 );
+                newopt.sv_index = i;
+                opts.push_back(newopt);
+            }
+        }
+        i++;
+    }
+
+    // cout << "\t" << opts.size() << "\n";
+
+
+    /// Random option choice
+    //auto best_opt = opts[ abs(rand())%opts.size() ];
+
+    /// Greedy choice:
+        // inserting to the place with the lowest additional price
+    //auto best_opt = *( min_element(opts.begin(),opts.end()) );
+
+    //sort( opts.begin(), opts.end() );
+
+    int os = opts.size();
+    //cout << "\tos: " << os << "\n";
+    if( os>0 ){
+        /// Greedy choice:
+            // inserting to the place with the lowest additional price
+        int index = variator[k]%os;
+        auto best_opt = opts[ index ];
+
+        if(greedy){
+            auto choice = min_element(opts.begin(),opts.end());
+            best_opt = *choice;
+            variator[k] = distance(opts.begin(),choice);
+        }
+
+        insertion( npt, best_opt );
+    }
+    else{
+        exists = false;
+        //cout << "NO\n";
+    }
 }
 
-void Solution::point_insertion( const pt &npt, int k ){
+/*
+void Solution::point_insertion_( const pt &npt, int k ){
 
     //cout << 2 << "\n";
 
@@ -243,10 +306,6 @@ void Solution::point_insertion( const pt &npt, int k ){
     /// Random option choice
     //auto best_opt = opts[ abs(rand())%opts.size() ];
 
-    /// Greedy choice:
-        // inserting to the place with the lowest additional price
-    //auto best_opt = *( min_element(opts.begin(),opts.end()) );
-
     int vk = variator[k],
         os = opts.size();
     if( os>0 ){
@@ -257,6 +316,7 @@ void Solution::point_insertion( const pt &npt, int k ){
     else
         exists = false;
 }
+*/
 
 void Solution::upd_cost(){
     Cost = 0;
