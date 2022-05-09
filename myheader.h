@@ -5,6 +5,10 @@
 #include <iterator>
 #include <cmath>
 
+#include <ctime>
+#include <random>
+#include <limits>
+
 using namespace std;
 
 struct pt{ // point
@@ -15,6 +19,8 @@ struct pt{ // point
     pt();
     pt( int ID, double X, double Y, int D );
     double dist( pt &distance_to ); // returns distance between two points
+
+    bool operator<(const pt &right);
 };
 
 double dist( pt a, pt b );
@@ -34,6 +40,8 @@ public:
     const pt& source();
     const pt& operator()(int index);
 
+    void permute();
+
 private:
 
     pt Source;
@@ -49,10 +57,11 @@ class Solution{
 public:
     Solution( Problem *P );
     void calculate();
+    double Cost;
 
     void show();
 
-    ~Solution();
+    //~Solution();
 
 private:
 
@@ -85,4 +94,6 @@ private:
     double solution_cost();
     void point_insertion( const pt &npt );
     void insertion( const pt &npt, option &opt );
+
+    void upd_cost();
 };

@@ -1,14 +1,17 @@
 # depslib dependency file v1.0
-1652090103 source:d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\main.cpp
+1652096289 source:d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\main.cpp
 	"myheader.h"
 
-1652091292 d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\myheader.h
+1652095570 d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\myheader.h
 	<iostream>
 	<vector>
 	<algorithm>
 	<iterator>
 	<cmath>
+	<ctime>
+	<random>
+	<limits>
 
-1652090067 source:d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\transportation.cpp
+1652095401 source:d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\transportation.cpp
 	"myheader.h"
 

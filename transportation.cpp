@@ -16,6 +16,10 @@ pt::pt( int ID, double X, double Y, int D ){
     demand = D;
 }
 
+bool pt::operator<(const pt &right){
+    return ( this->id < right.id );
+}
+
 double dist( pt a, pt b ){
     return sqrt( pow( a.x - b.x, 2 ) + pow( a.y - b.y, 2 ) );
 }
@@ -48,7 +52,7 @@ void Problem::show_cond(){
     cout<<Source.demand<<" "
         <<Source.x<<" "<<Source.y<<"\n\n";
     for(auto p: points_data)
-        cout<<p.demand<<" "<<p.x<<" "<<p.y<<"\n";
+        cout<<p.id<<") "<<p.demand<<" "<<p.x<<" "<<p.y<<"\n";
 }
 
 int Problem::Consumers_number(){
@@ -74,6 +78,10 @@ const pt& Problem::operator()(int index){
         return Source;
 }
 
+void Problem::permute(){
+    next_permutation( points_data.begin(), points_data.end() );
+}
+
 /// Solving
 
 Solution::Solution( Problem *P ){
@@ -82,11 +90,13 @@ Solution::Solution( Problem *P ){
     sv_solution init = sv_solution(the_problem->source());
     distr = vector<sv_solution> (the_problem->Vehicles_number(),
                                  init);
+    Cost = -1;
 }
 
 void Solution::show(){
     cout<<"\n";
 
+    cout << "COST: " << Cost << "\n";
     for(auto svsol: distr)
         svsol.show();
 
@@ -96,7 +106,8 @@ void Solution::show(){
 void Solution::sv_solution::show(){
     cout << "gd: " << goods_delivered << ", cost: " << cost << "\n\t";
     for(auto p: path)
-        cout << p.id << ": ( " << p.x << ", " << p.y << " ); ";
+        cout << p.id << " ";
+        //cout << p.id << ": ( " << p.x << ", " << p.y << " ); ";
     cout << "\n";
 }
 
@@ -122,7 +133,7 @@ Solution::option::option(){
 }
 
 bool Solution::option::operator<(const option &r_opt){
-    return this->additional_cost < r_opt.additional_cost;
+    return ( this->additional_cost < r_opt.additional_cost );
 }
 
 Solution::option Solution::sv_solution::insertion_check( const pt &npt ){
@@ -181,14 +192,27 @@ void Solution::point_insertion( const pt &npt ){
         i++;
     }
 
-    // Greedy choice:
+    /// ( TODO: )
+        // random option choice for genetic algorithm
+
+    /// Greedy choice:
         // inserting to the place with the lowest additional price
 
-    auto best_opt = *( min_element(opts.begin(),opts.end()) );
+    //auto best_opt = *( min_element(opts.begin(),opts.end()) );
+
+    // sort( opts.begin(), opts.end() );
+    // auto best_opt = opts[ ( 3 * npt.id ) % opts.size() ];
+    auto best_opt = opts[ rand()%opts.size() ];
+
     insertion( npt, best_opt );
 
-    /// TODO:
-        // random option choice for genetic algorithm
+    //cout << "\tNum of options: " << opts.size() << "\n";
+}
+
+void Solution::upd_cost(){
+    Cost = 0;
+    for(auto svsol: distr)
+        Cost += svsol.cost;
 }
 
 void Solution::calculate(){
@@ -198,29 +222,24 @@ void Solution::calculate(){
             // ( keep all options in memory )
         // insert in there
 
-        cout << "Before:";
-        show();
-
-
-
     int n = the_problem->Consumers_number();
     for(int i=0; i<n; i++){
         auto ins = (*the_problem)(i);
         point_insertion( ins );
-        cout << "ID: " << ins.id << "\n";
-        show();
+        //cout << "ID: " << ins.id << "\n";
+        //show();
     }
 
-
-        cout << "after:";
-        show();
+    upd_cost();
 
     // All points are inserted, the solution is kinda ready...
 }
 
+/*
 Solution::~Solution(){
     if(the_problem!=nullptr)
         delete the_problem;
 }
+*/
 
 //
