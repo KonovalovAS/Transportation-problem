@@ -59,7 +59,7 @@ Solution simulated_annealing( Problem& P ){
 
     vector<int> cur_var (n,0);
 
-    int T = 100;
+    int T = 800;
     while( T > 0 ){
 
         vector<int> new_var (n);
@@ -76,16 +76,19 @@ Solution simulated_annealing( Problem& P ){
         Solution A( &P, new_var );
         A.calculate();
 
-        if( best > A.Cost )
-            best_var = new_var;
-        best = min(A.Cost,best);
+        if( A.exists ){
+            if( best > A.Cost )
+                best_var = new_var;
+            best = min(A.Cost,best);
 
-        int flag = abs(rand())%100;
-        if( flag>50 )
-            cur_var = new_var;
+            int flag = abs(rand())%150;
+            if( flag > 100 )
+                cur_var = new_var;
+            else if(flag > 50)
+                cur_var = best_var;
 
-        T--;
-        //cout << (flag>50) << "\n";
+            T--;
+        }
     }
 
     Solution fin( &P, best_var );

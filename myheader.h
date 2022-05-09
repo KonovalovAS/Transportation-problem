@@ -63,6 +63,8 @@ public:
 
     void show();
 
+    bool exists;
+
     //~Solution();
 
 private:

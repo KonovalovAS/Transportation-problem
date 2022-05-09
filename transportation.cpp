@@ -101,6 +101,7 @@ Solution::Solution( Problem *P ){
     Cost = -1;
 
     variator = vector<int> (the_problem->Consumers_number(),0);
+    exists = true;
 }
 
 Solution::Solution( Problem *P, vector<int> &var ){
@@ -112,6 +113,7 @@ Solution::Solution( Problem *P, vector<int> &var ){
     Cost = -1;
 
     variator = var;
+    exists = true;
 }
 
 
@@ -237,30 +239,23 @@ void Solution::point_insertion( const pt &npt, int k ){
         i++;
     }
 
-    /// ( TODO: )
-        // random option choice for genetic algorithm
+
+    /// Random option choice
+    //auto best_opt = opts[ abs(rand())%opts.size() ];
 
     /// Greedy choice:
         // inserting to the place with the lowest additional price
-
     //auto best_opt = *( min_element(opts.begin(),opts.end()) );
 
-    // sort( opts.begin(), opts.end() );
-    // auto best_opt = opts[ ( 3 * npt.id ) % opts.size() ];
-    //auto best_opt = opts[ abs(rand())%opts.size() ];
-
-    //cout << 11 << "\n";
-    // cout << "\t\t" << k << "/" << variator.size() << "\n";
-    int index = variator[k],
+    int vk = variator[k],
         os = opts.size();
-    // int index = (variator[k])%(opts.size());
-    // cout << "\t" << index << " " << index%os << "\n";
-    auto best_opt = opts[ index%(opts.size()) ];
-    insertion( npt, best_opt );
-
-    //cout << 16 << "\n";
-
-    //cout << "\tNum of options: " << opts.size() << "\n";
+    if( os>0 ){
+        int index = vk%os;
+        auto best_opt = opts[ index ];
+        insertion( npt, best_opt );
+    }
+    else
+        exists = false;
 }
 
 void Solution::upd_cost(){
@@ -279,14 +274,19 @@ void Solution::calculate(){
     //cout << 1 << "\n";
 
     int n = the_problem->Consumers_number();
-    for(int i=0; i<n; i++){
+    for(int i=0; i<n && exists; i++){
         auto ins = (*the_problem)(i);
         point_insertion( ins, i );
     }
     //cout << 17 << "\n";
 
     //cout << "almost done\n";
-    upd_cost();
+    if(exists)
+        upd_cost();
+    else{
+        Cost = -1;
+        distr.resize(0);
+    }
     //cout << 18 << "\n";
 
     //cout << "done\n";
