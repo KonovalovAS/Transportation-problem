@@ -17,5 +17,8 @@ int main()
     }
     P.show_cond();
 
+    Solution A( &P );
+    A.calculate();
+
     return 0;
 }

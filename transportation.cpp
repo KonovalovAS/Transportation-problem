@@ -16,8 +16,8 @@ pt::pt( int ID, double X, double Y, int D ){
     demand = D;
 }
 
-double pt::dist( pt &distance_to ){
-    return sqrt( pow( y-distance_to.y ,2) + pow( x-distance_to.x ,2) );
+double dist( pt a, pt b ){
+    return sqrt( pow( a.x - b.x, 2 ) + pow( a.y - b.y, 2 ) );
 }
 
 Problem::Problem( int V, int c ){
@@ -78,8 +78,26 @@ const pt& Problem::operator()(int index){
 
 Solution::Solution( Problem *P ){
     the_problem = P;
-    distr = vector<sv_solution>(the_problem->Consumers_number(),
-                                the_problem->source());
+    distr.resize(0);
+    sv_solution init = sv_solution(the_problem->source());
+    distr = vector<sv_solution> (the_problem->Vehicles_number(),
+                                 init);
+}
+
+void Solution::show(){
+    cout<<"\n";
+
+    for(auto svsol: distr)
+        svsol.show();
+
+    cout<<"\n";
+}
+
+void Solution::sv_solution::show(){
+    cout << "gd: " << goods_delivered << ", cost: " << cost << "\n\t";
+    for(auto p: path)
+        cout << p.id << ": ( " << p.x << ", " << p.y << " ); ";
+    cout << "\n";
 }
 
 Solution::sv_solution::sv_solution(){
@@ -94,42 +112,83 @@ Solution::sv_solution::sv_solution( const pt &source ){
     path = {source,source};
 }
 
+Solution::option::option(double add_cost, int ins_here){
+    insert_here = ins_here;
+    additional_cost = add_cost;
+}
+
+Solution::option::option(){
+    additional_cost = 0;
+}
+
 bool Solution::option::operator<(const option &r_opt){
     return this->additional_cost < r_opt.additional_cost;
 }
 
-/*
-option& Solution::sv_solution::insertion_check( sv_solution &sv_sol ){
-
-    /// TODO
+Solution::option Solution::sv_solution::insertion_check( const pt &npt ){
 
     // finding place for insertion
         // saving iterator for "emplace"-method
         // saving additional cost for such emplacement
         // return "option" with this information
+
+    int it = 0,
+        here = it+1;
+    double best_len = dist( path[it], npt )
+                    + dist( npt, path[it+1] )
+                    - dist( path[it], path[it+1] );
+    it++;
+
+    int num_of_nodes = path.size();
+    for(int i=0; i<num_of_nodes-2; i++){
+        double tmp = dist( path[it], npt )
+                   + dist( npt, path[it+1] )
+                   - dist( path[it], path[it+1] );
+        if( tmp < best_len ){
+            best_len = tmp;
+            here = it+1;
+        }
+        it++;
+    }
+
+    option newopt( best_len, here );
+    return newopt;
+}
+
+void Solution::insertion( const pt &npt, option &opt ){
+
+    distr[opt.sv_index].cost += opt.additional_cost;
+    distr[opt.sv_index].goods_delivered += npt.demand;
+    vector<pt>::iterator ins_here = next( distr[opt.sv_index].path.begin(), opt.insert_here );
+    distr[opt.sv_index].path.emplace( ins_here, npt );
 }
 
 void Solution::point_insertion( const pt &npt ){
 
     int num_options = 0;
     vector<option> opts(0);
+    int capacity = the_problem->Capacity();
 
-    for(int i=0; i<num_vehicles; i++){
-        if( npt.demand <= capacity - Solution[i].cost ){
+    int i=0;
+    // for each sv_solution in distr: trying to insert
+    for(auto sv_sol: distr){
+        if( npt.demand <= capacity - sv_sol.goods_delivered ){
             num_options++;
-            option newopt = Solution[i].insertion_check( npt );
+            option newopt = sv_sol.insertion_check( npt );
             newopt.sv_index = i;
             opts.push_back(newopt);
         }
+        i++;
     }
 
-    /// TODO
     // Greedy choice:
         // inserting to the place with the lowest additional price
 
-            /// LATER (for genetic algorithm):
-            // *a different way to choose the place for insertion
-                // the idea is just in my head
+    auto best_opt = *( min_element(opts.begin(),opts.end()) );
+    insertion( npt, best_opt );
+
+    /// TODO:
+        // random option choice for genetic algorithm
 }
 
 void Solution::calculate(){
@@ -139,10 +198,29 @@ void Solution::calculate(){
             // ( keep all options in memory )
         // insert in there
 
+        cout << "Before:";
+        show();
+
+
+
     int n = the_problem->Consumers_number();
-    for(int i=0; i<n; i++)
-        point_insertion( the_problem->(i) );
+    for(int i=0; i<n; i++){
+        auto ins = (*the_problem)(i);
+        point_insertion( ins );
+        cout << "ID: " << ins.id << "\n";
+        show();
+    }
+
+
+        cout << "after:";
+        show();
 
     // All points are inserted, the solution is kinda ready...
 }
-*/
+
+Solution::~Solution(){
+    if(the_problem!=nullptr)
+        delete the_problem;
+}
+
+//

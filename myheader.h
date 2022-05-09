@@ -17,6 +17,8 @@ struct pt{ // point
     double dist( pt &distance_to ); // returns distance between two points
 };
 
+double dist( pt a, pt b );
+
 class Problem{
 public:
 
@@ -48,6 +50,10 @@ public:
     Solution( Problem *P );
     void calculate();
 
+    void show();
+
+    ~Solution();
+
 private:
 
     Problem * the_problem;
@@ -55,8 +61,10 @@ private:
     struct option{ // auxiliary structure
         int sv_index;
         double additional_cost;
-        vector<pt>::iterator insert_here;
+        int insert_here;
 
+        option();
+        option(double add_cost, int ins_here);
         bool operator<(const option &r_opt);
     };
 
@@ -68,11 +76,13 @@ private:
         double cost;
         vector<pt> path;
 
-        option& insertion_check( const pt &npt );
+        option insertion_check( const pt &npt );
+
+        void show();
     };
 
     vector<sv_solution> distr; // consumers distribution among vehicles
     double solution_cost();
     void point_insertion( const pt &npt );
-
+    void insertion( const pt &npt, option &opt );
 };
