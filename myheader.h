@@ -21,6 +21,7 @@ struct pt{ // point
     double dist( pt &distance_to ); // returns distance between two points
 
     bool operator<(const pt &right);
+    pt& operator=(const pt &right);
 };
 
 double dist( pt a, pt b );
@@ -56,6 +57,7 @@ private:
 class Solution{
 public:
     Solution( Problem *P );
+    Solution( Problem *P, vector<int> &var );
     void calculate();
     double Cost;
 
@@ -74,7 +76,9 @@ private:
 
         option();
         option(double add_cost, int ins_here);
+
         bool operator<(const option &r_opt);
+        option& operator=(const option r_opt);
     };
 
     struct sv_solution{ // single-vehicle solution ("sub-solution");
@@ -92,8 +96,11 @@ private:
 
     vector<sv_solution> distr; // consumers distribution among vehicles
     double solution_cost();
-    void point_insertion( const pt &npt );
+    void point_insertion( const pt &npt, int k );
     void insertion( const pt &npt, option &opt );
 
+    vector<int> variator;
     void upd_cost();
 };
+
+//
