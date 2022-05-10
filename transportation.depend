@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1652173935 source:d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\main.cpp
+1652187078 source:d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\main.cpp
 	"tester.h"
 
 1652168378 d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\myheader.h
@@ -15,7 +15,7 @@
 1652128334 source:d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\transportation.cpp
 	"myheader.h"
 
-1652173397 d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\tester.h
+1652186392 d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\tester.h
 	"myheader.h"
 	<fstream>
 	<stdio.h>
@@ -23,6 +23,6 @@
 	<mutex>
 	<queue>
 
-1652172360 source:d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\tester_source.cpp
+1652187269 source:d:\000 00 educ\ecm\ecm 4 сем\Транспортная\transportation\transportation\tester_source.cpp
 	"tester.h"
 

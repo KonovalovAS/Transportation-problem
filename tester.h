@@ -5,6 +5,9 @@
 #include <mutex>
 #include <queue>
 
+void set_rand();
+int randi(int sup);
+
 struct test{
     string fname;
     double MV;

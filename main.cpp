@@ -3,9 +3,10 @@
 
 int main()
 {
-    srand(time(0));
-    string ifname = "data.txt";
-    string ofname = "0RES.txt";
+    set_rand();
+
+    string ifname = "data1.txt";
+    string ofname = "0res1.txt";
 
     RUN(ifname,ofname);
 

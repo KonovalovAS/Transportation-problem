@@ -1,5 +1,16 @@
 #include "tester.h"
 
+mt19937 mersenne;
+uniform_int_distribution<> random{0,500};
+
+void set_rand(){
+    mersenne = mt19937( static_cast<mt19937::result_type>(time(nullptr)) );
+}
+
+int randi(int sup){
+    int res = random(mersenne)%(sup+1);
+    return res;
+}
 
 bool test::operator<(const test& r){
     return ( this->percent>0 && this->percent<r.percent);
@@ -77,7 +88,6 @@ void add( vector<int>& v, const vector<int> sum, int n ){
 }
 
 Solution simulated_annealing( Problem& P ){
-
     int n = P.Consumers_number() + P.Vehicles_number();
     double best = 1.79E+308;
     vector<int> cur_var (n,0);
@@ -100,39 +110,67 @@ Solution simulated_annealing( Problem& P ){
     int T0 = 3*n,
         T = T0,
         counter = 0,
-        limit = 5;
+        limit = 200;
+
+    //cout << "\tinit: " << best << "\n";
+
+    vector<int> sum(n);
 
     while( T > 1 ){
 
-        vector<int> new_var = cur_var,
-                    sum(n);
+        vector<int> new_var = cur_var;
 
         for(int i=0; i<n; i++)
-            sum[i] = rand()%T;
+            sum[i] = randi(T);
         add(new_var,sum,n);
 
         Solution A( &P, new_var );
         A.calculate();
 
-        if( A.exists && A.Cost > 0 ){
+        if( A.exists ){
             if( best > A.Cost ){
                 best_var = new_var;
                 best = A.Cost;
+                //cout << "\t\tupd: " << best << "\n";
             }
 
             cur_var = new_var;
 
 
-            int flag = abs(rand())%150;
-            if( flag > 100 )
+            int flag = randi(1);
+            if( flag )
                 cur_var = new_var;
-            else if(flag > 50)
-                cur_var = best_var;
 
             counter++;
-            if(counter==T*limit){
+            if(counter==limit){
                 counter = 0;
                 T -= 3;
+            }
+        }
+    }
+
+    T = T0;
+    cur_var = best_var;
+    limit = 20;
+    while( T > 1 ){
+        for(int i=0; i<n; i++)
+            sum[i] = randi(T);
+        add(cur_var,sum,n);
+
+        Solution A( &P, cur_var );
+        A.calculate();
+
+        if( A.exists ){
+            if( best > A.Cost ){
+                best_var = cur_var;
+                best = A.Cost;
+                //cout << "\tls:\t" << best << "\n";
+            }
+
+            counter++;
+            if(counter==limit){
+                counter = 0;
+                T -= 1;
             }
         }
     }
@@ -184,7 +222,7 @@ void run( queue<test> &Data, mutex &common, queue<test> &RES ){
         t.me = S.Cost,
         t.percent = 100*(t.me-t.MV)/t.MV;
 
-        int ats0 = 3,
+        int ats0 = 10,
             ats = ats0;
         while(ats>0 && t.percent>20){
             common.lock();
