@@ -4,8 +4,8 @@
 int main()
 {
     srand(time(0));
-    string ifname = "data_part.txt";
-    string ofname = "0res_part.txt";
+    string ifname = "data.txt";
+    string ofname = "0RES.txt";
 
     RUN(ifname,ofname);
 

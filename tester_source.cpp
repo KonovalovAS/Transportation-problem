@@ -97,26 +97,19 @@ Solution simulated_annealing( Problem& P ){
         best_var = G.Variator();
     }
 
-    int T0 = n,
+    int T0 = 3*n,
         T = T0,
         counter = 0,
-        limit = 500;
+        limit = 5;
 
     while( T > 1 ){
 
         vector<int> new_var = cur_var,
                     sum(n);
 
-        for(int i=0; i<n; i++){
+        for(int i=0; i<n; i++)
             sum[i] = rand()%T;
-        }
         add(new_var,sum,n);
-
-        /*
-        for(auto in: new_var)
-            cout << in << " ";
-        cout<<"\n";
-        */
 
         Solution A( &P, new_var );
         A.calculate();
@@ -125,7 +118,6 @@ Solution simulated_annealing( Problem& P ){
             if( best > A.Cost ){
                 best_var = new_var;
                 best = A.Cost;
-                //cout << "\t\t" << best << "\n";
             }
 
             cur_var = new_var;
@@ -138,11 +130,9 @@ Solution simulated_annealing( Problem& P ){
                 cur_var = best_var;
 
             counter++;
-            if(counter==limit){
-                //cout << this_thread::get_id() << "\n";
-                //cout << "\t" << (T0-T+1) << "/" << T0 << "\n";
+            if(counter==T*limit){
                 counter = 0;
-                T -= 1;
+                T -= 3;
             }
         }
     }
@@ -194,12 +184,12 @@ void run( queue<test> &Data, mutex &common, queue<test> &RES ){
         t.me = S.Cost,
         t.percent = 100*(t.me-t.MV)/t.MV;
 
-        int ats0 = 20,
+        int ats0 = 3,
             ats = ats0;
         while(ats>0 && t.percent>20){
             common.lock();
             cout << this_thread::get_id()
-                 << ": attempt " << ats0-ats << "/" << ats0 << "\n";
+                 << ": attempt " << ats0+1-ats << "/" << ats0 << "\n";
             common.unlock();
             S = simulated_annealing(P);
             if(t.me>S.Cost){
@@ -306,116 +296,4 @@ void RUN( string &ifname, string &ofname ){
     out.close();
 }
 
-
-
-
-
-
-
-/*
-
-Tester::Tester(string tests_list_fname){
-
-    ifstream in (tests_list_fname);
-    better = 0;
-    failed = 0;
-    cur = 0;
-
-    string fname;
-    double MV;
-
-    Data = vector<test> (0);
-    in >> fname >> MV;
-    while( fname != "end" ){
-        test new_test = { fname, MV, false, -1, -1 };
-        Data.push_back( new_test );
-        in >> fname >> MV;
-    }
-    in.close();
-
-    num_tests = Data.size();
-
-}
-
-Problem Tester::problem_reader( string &name ){
-
-    ifstream in(name);
-
-    int n,v,c;
-    in >> n >> v >> c;
-    Problem P(v,c);
-    int d;
-    double x,y;
-    in>>d>>x>>y;
-
-    P.make_source(pt(0,x,y,0));
-
-    for(int i=1; i<n; i++){
-        in>>d>>x>>y;
-        P.add_point(pt(i,x,y,d));
-    }
-    in.close();
-
-    //P.show_cond();
-
-    return P;
-}
-
-void Tester::run_st(test& t){
-
-    Problem P = problem_reader(t.fname);
-    Solution S = simulated_annealing(P);
-    t.calculated = true;
-    t.me = S.Cost,
-    t.percent = 100*(t.me-t.MV)/t.MV;
-
-    if(t.percent>20)
-        failed++;
-    else if(t.percent<0)
-        better++;
-
-    lock_guard<mutex> lock(output);
-
-    cout << this_thread::get_id() << "\n";
-    cout << t.fname << " is done with result " << t.percent << "%\n";
-    cur++;
-}
-
-void Tester::run1( vector<test> D ){
-    while(cur<num_tests){
-        run_st(D[cur]);
-    }
-}
-
-void Tester::Run(){
-
-    thread thr1(run1,ref(Data)),
-           thr2(run1,ref(Data));
-
-    thr1.join();
-    thr2.join();
-}
-
-void Tester::Report( string fname ){
-
-    ofstream out (fname);
-
-    for(auto t: Data){
-        out << t.fname << "\tme: " << t.me
-            << "\tteacher: " << t.MV
-            << "\t" << t.percent << "%\n";
-
-        cout << t.fname << "\tme: " << t.me
-             << "\tteacher: " << t.MV
-             << "\t" << t.percent << "%\n";
-    }
-
-    out << "\n Better: " << better << "/" << num_tests
-        << ":\t" << (double)(100*better)/num_tests
-        << "%;\nFailed: " << failed << "/" << num_tests
-        << ":\t" << (double)(100*failed)/num_tests << "%.";
-
-    out.close();
-}
-
-*/
+//
