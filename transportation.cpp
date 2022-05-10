@@ -173,49 +173,10 @@ Solution::option& Solution::option::operator=(const option r_opt){
 }
 
 void Solution::insertion( const pt &npt, option &opt ){
-
-    //cout << 12 << "\n";
     distr[opt.sv_index].cost += opt.additional_cost;
     distr[opt.sv_index].goods_delivered += npt.demand;
-    //cout << 13 << "\n";
     vector<pt>::iterator ins_here = next( distr[opt.sv_index].path.begin(), opt.insert_here );
-    //cout << 14 << "\n";
     distr[opt.sv_index].path.emplace( ins_here, npt );
-    //cout << 15 << "\n";
-}
-
-Solution::option Solution::sv_solution::insertion_check( const pt &npt ){
-
-    // finding place for insertion
-        // saving iterator for "emplace"-method
-        // saving additional cost for such emplacement
-        // return "option" with this information
-
-    //cout << 5 << "\n";
-    int it = 0,
-        here = it+1;
-    double best_len = dist( path[it], npt )
-                    + dist( npt, path[it+1] )
-                    - dist( path[it], path[it+1] );
-    it++;
-
-    //cout << 6 << "\n";
-    int num_of_nodes = path.size();
-    for(int i=0; i<num_of_nodes-2; i++){
-        double tmp = dist( path[it], npt )
-                   + dist( npt, path[it+1] )
-                   - dist( path[it], path[it+1] );
-        if( tmp < best_len ){
-            best_len = tmp;
-            here = it+1;
-        }
-        it++;
-    }
-    //cout << 7 << "\n";
-
-    option newopt( best_len, here );
-    //cout << 8 << "\n";
-    return newopt;
 }
 
 void Solution::point_insertion( const pt &npt, int k ){
@@ -224,13 +185,10 @@ void Solution::point_insertion( const pt &npt, int k ){
     int capacity = the_problem->Capacity();
 
     int i=0;
-    // for each sv_solution in distr: trying to insert
     for(auto s: distr){
         if( npt.demand <= capacity - s.goods_delivered ){
             int n = (s.path).size();
-            // cout << n << "\n";
             for(int j=0; j<n-1; j++){
-                //cout << "here!\n";
                 double add_cost = dist( s.path[j], npt )
                                 + dist( npt, s.path[j+1] )
                                 - dist( s.path[j], s.path[j+1] );
@@ -242,27 +200,15 @@ void Solution::point_insertion( const pt &npt, int k ){
         i++;
     }
 
-    // cout << "\t" << opts.size() << "\n";
-
-
-    /// Random option choice
-    //auto best_opt = opts[ abs(rand())%opts.size() ];
-
-    /// Greedy choice:
-        // inserting to the place with the lowest additional price
-    //auto best_opt = *( min_element(opts.begin(),opts.end()) );
-
-    //sort( opts.begin(), opts.end() );
+    sort( opts.begin(), opts.end() );
 
     int os = opts.size();
-    //cout << "\tos: " << os << "\n";
     if( os>0 ){
-        /// Greedy choice:
-            // inserting to the place with the lowest additional price
         int index = variator[k]%os;
         auto best_opt = opts[ index ];
 
         if(greedy){
+            // inserting to the place with the lowest additional price
             auto choice = min_element(opts.begin(),opts.end());
             best_opt = *choice;
             variator[k] = distance(opts.begin(),choice);
@@ -272,51 +218,8 @@ void Solution::point_insertion( const pt &npt, int k ){
     }
     else{
         exists = false;
-        //cout << "NO\n";
     }
 }
-
-/*
-void Solution::point_insertion_( const pt &npt, int k ){
-
-    //cout << 2 << "\n";
-
-    int num_options = 0;
-    vector<option> opts(0);
-    int capacity = the_problem->Capacity();
-
-    //cout << 3 << "\n";
-
-    int i=0;
-    // for each sv_solution in distr: trying to insert
-    for(auto sv_sol: distr){
-        if( npt.demand <= capacity - sv_sol.goods_delivered ){
-            num_options++;
-            //cout << 4 << "\n";
-            option newopt = sv_sol.insertion_check( npt );
-            //cout << 9 << "\n";
-            newopt.sv_index = i;
-            opts.push_back(newopt);
-            //cout << 10 << "\n";
-        }
-        i++;
-    }
-
-
-    /// Random option choice
-    //auto best_opt = opts[ abs(rand())%opts.size() ];
-
-    int vk = variator[k],
-        os = opts.size();
-    if( os>0 ){
-        int index = vk%os;
-        auto best_opt = opts[ index ];
-        insertion( npt, best_opt );
-    }
-    else
-        exists = false;
-}
-*/
 
 void Solution::upd_cost(){
     Cost = 0;
@@ -326,39 +229,18 @@ void Solution::upd_cost(){
 
 void Solution::calculate(){
 
-    // insert each point from points_data into solution:
-        // find optimal place among all sv_solutions
-            // ( keep all options in memory )
-        // insert in there
-
-    //cout << 1 << "\n";
-
     int n = the_problem->Consumers_number();
     for(int i=0; i<n && exists; i++){
         auto ins = (*the_problem)(i);
         point_insertion( ins, i );
     }
-    //cout << 17 << "\n";
 
-    //cout << "almost done\n";
     if(exists)
         upd_cost();
     else{
         Cost = -1;
         distr.resize(0);
     }
-    //cout << 18 << "\n";
-
-    //cout << "done\n";
-
-    // All points are inserted, the solution is kinda ready...
 }
-
-/*
-Solution::~Solution(){
-    if(the_problem!=nullptr)
-        delete the_problem;
-}
-*/
 
 //
