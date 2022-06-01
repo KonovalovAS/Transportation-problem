@@ -5,8 +5,8 @@ int main()
 {
     set_rand();
 
-    string ifname = "data1.txt";
-    string ofname = "0res1.txt";
+    string ifname = "data.txt";
+    string ofname = "_partial_result_017.txt";
 
     RUN(ifname,ofname);
 

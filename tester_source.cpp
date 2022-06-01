@@ -149,6 +149,7 @@ Solution simulated_annealing( Problem& P ){
         }
     }
 
+    // some additional local search
     T = T0;
     cur_var = best_var;
     limit = 20;

@@ -34,6 +34,8 @@
 		</Compiler>
 		<Unit filename="main.cpp" />
 		<Unit filename="myheader.h" />
+		<Unit filename="tester.h" />
+		<Unit filename="tester_source.cpp" />
 		<Unit filename="transportation.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
